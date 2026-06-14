@@ -1,0 +1,18 @@
+# Build outputs
+pc/build/
+pi/build/
+pi/serial_test/serial_test
+udp_test/udp-send
+udp_test/udp-recv
+
+# PlatformIO
+pico/.pio/
+
+# macOS
+.DS_Store
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
