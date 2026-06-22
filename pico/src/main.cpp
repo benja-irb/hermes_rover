@@ -20,8 +20,10 @@
 
 using namespace hermes;
 
+enum class DriveMode { ACKERMANN, PIVOT, CRAB };
+
 static RoverController* rover       = nullptr;
-static bool             tankMode    = false;
+static DriveMode        mode        = DriveMode::ACKERMANN;
 static uint8_t          prevActions = 0;
 static uint8_t          fbSeq       = 0;
 static uint32_t         lastPacketMs = 0;
@@ -56,23 +58,36 @@ static void tryReadPacket() {
 
     lastPacketMs = millis();
 
-    // Rising-edge detect on TOGGLE_PIVOT to switch between Ackermann and pivot mode
-    bool pivot     = (pkt.actions & action::TOGGLE_PIVOT) != 0u;
-    bool prevPivot = (prevActions & action::TOGGLE_PIVOT) != 0u;
-    if (pivot && !prevPivot) {
-        tankMode = !tankMode;
-        if (!tankMode) {
-            // Return wheels to straight and stop when leaving pivot mode
-            rover->setTraction(0.0f);
-        }
-    }
+    // Rising-edge detect on TOGGLE_PIVOT / CRAB_MODE to switch drive mode.
+    // Either button switches directly between PIVOT and CRAB; pivot wins if
+    // both edges land in the same packet (deterministic tie-break).
+    bool pivotEdge = (pkt.actions & action::TOGGLE_PIVOT) != 0u &&
+                      (prevActions & action::TOGGLE_PIVOT) == 0u;
+    bool crabEdge  = (pkt.actions & action::CRAB_MODE) != 0u &&
+                      (prevActions & action::CRAB_MODE) == 0u;
     prevActions = pkt.actions;
 
-    if (tankMode) {
-        rover->setPivot(pkt.throttle);
-    } else {
-        rover->setAckermann(pkt.steer);
-        rover->setTraction(pkt.throttle);
+    if (pivotEdge) {
+        mode = (mode == DriveMode::PIVOT) ? DriveMode::ACKERMANN : DriveMode::PIVOT;
+        rover->setTraction(0.0f); // zero traction on any mode change before re-steering
+    } else if (crabEdge) {
+        mode = (mode == DriveMode::CRAB) ? DriveMode::ACKERMANN : DriveMode::CRAB;
+        rover->setTraction(0.0f);
+    }
+
+    switch (mode) {
+        case DriveMode::PIVOT:
+            rover->setPivot(pkt.throttle);
+            break;
+        case DriveMode::CRAB:
+            rover->setCrab(pkt.steer);
+            rover->setTraction(pkt.throttle);
+            break;
+        case DriveMode::ACKERMANN:
+        default:
+            rover->setAckermann(pkt.steer);
+            rover->setTraction(pkt.throttle);
+            break;
     }
 }
 

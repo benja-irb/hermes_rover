@@ -46,6 +46,12 @@ public:
      */
     void setPivot(float speed);
 
+    /**
+     * @brief Crab mode: steer all four wheels to the same angle for lateral motion.
+     * @param val [-1.0, 1.0]. Dead zone |val| < 0.05 resets to straight.
+     */
+    void setCrab(float val);
+
     /** Stop all motors and release PWM resources. */
     void stopAll();
 

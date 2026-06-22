@@ -65,6 +65,19 @@ void RoverController::setAckermann(float val) {
     }
 }
 
+void RoverController::setCrab(float val) {
+    if (val >  1.0f) val =  1.0f;
+    if (val < -1.0f) val = -1.0f;
+
+    if (fabsf(val) < STEER_DEAD) {
+        for (int i = 0; i < 4; ++i) targets_[i] = 90.0f;
+        return;
+    }
+
+    float angle = 90.0f + val * 90.0f;
+    for (int i = 0; i < 4; ++i) targets_[i] = angle;
+}
+
 void RoverController::setPivot(float speed) {
     // Wheels arranged in an X pattern for symmetric pivot
     targets_[0] =  36.0f; // FL
