@@ -24,6 +24,12 @@ static RoverController* rover       = nullptr;
 static bool             tankMode    = false;
 static uint8_t          prevActions = 0;
 static uint8_t          fbSeq       = 0;
+static uint32_t         lastPacketMs = 0;
+
+// If no valid ControlPacket arrives within this window (PC exit, crash, USB
+// or network disconnect, ...), the rover would otherwise keep driving at its
+// last commanded duty cycle forever. ~15 missed cycles at 50 Hz.
+static constexpr uint32_t WATCHDOG_TIMEOUT_MS = 300;
 
 // ---------------------------------------------------------------------------
 // Packet ingestion
@@ -47,6 +53,8 @@ static void tryReadPacket() {
     memcpy(&pkt, buf, sizeof(ControlPacket));
 
     if (!validateCrc(pkt)) return;
+
+    lastPacketMs = millis();
 
     // Rising-edge detect on TOGGLE_PIVOT to switch between Ackermann and pivot mode
     bool pivot     = (pkt.actions & action::TOGGLE_PIVOT) != 0u;
@@ -97,6 +105,11 @@ static void sendFeedback() {
 
 void loop() {
     tryReadPacket();
+
+    if (millis() - lastPacketMs > WATCHDOG_TIMEOUT_MS) {
+        rover->setTraction(0.0f);
+    }
+
     rover->loop();
     sendFeedback();
     delay(20); // 50 Hz control cycle
