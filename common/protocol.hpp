@@ -34,7 +34,7 @@ static constexpr uint32_t BAUD_RATE        = 115200;
 namespace action {
     static constexpr uint8_t TOGGLE_PIVOT = (1u << 0); // switch Ackermann ↔ pivot mode
     static constexpr uint8_t BOOST        = (1u << 1); // speed multiplier  (future use)
-    static constexpr uint8_t BRAKE        = (1u << 2); // emergency stop    (future use)
+    static constexpr uint8_t BRAKE        = (1u << 2); // switch Ackermann ↔ brake mode (disables traction + steering)
     static constexpr uint8_t CRAB_MODE    = (1u << 3); // switch Ackermann ↔ crab (parallel-steer) mode
 }
 

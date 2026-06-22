@@ -52,6 +52,13 @@ public:
      */
     void setCrab(float val);
 
+    /**
+     * @brief Brake mode: while active, traction and steering effort are
+     * forced to zero regardless of any other commands.
+     * @param active true while brake mode is selected, false otherwise.
+     */
+    void setBrake(bool active);
+
     /** Stop all motors and release PWM resources. */
     void stopAll();
 
@@ -69,6 +76,7 @@ private:
 
     float targets_[4]; // PID setpoints [°], default 90° = straight ahead
     float tDuty_[4];   // last applied traction duty per wheel
+    bool  brake_ = false; // when true, traction and steering effort are forced to zero
 
     // Per-wheel traction inversion: compensates for physically mirrored mounting.
     static constexpr int8_t T_INV[4] = {1, -1, -1, 1};

@@ -22,12 +22,13 @@ RoverController::RoverController()
 void RoverController::loop() {
     enc_.update();
     for (int i = 0; i < 4; ++i) {
-        float effort = pids_[i].compute(targets_[i], enc_.angles[i]);
+        float effort = brake_ ? 0.0f : pids_[i].compute(targets_[i], enc_.angles[i]);
         sMots_[i].setDuty(effort);
     }
 }
 
 void RoverController::setTraction(float val) {
+    if (brake_) val = 0.0f;
     if (fabsf(val) < TRACTION_DEAD) val = 0.0f;
     if (val >  1.0f) val =  1.0f;
     if (val < -1.0f) val = -1.0f;
@@ -87,6 +88,7 @@ void RoverController::setPivot(float speed) {
 
     if (speed >  1.0f) speed =  1.0f;
     if (speed < -1.0f) speed = -1.0f;
+    if (brake_) speed = 0.0f;
 
     // Diagonal pairs drive in opposite directions to spin in place
     const float velocities[4] = {-speed, speed, speed, -speed};
@@ -96,6 +98,10 @@ void RoverController::setPivot(float speed) {
         tDuty_[i] = adj * 100.0f;
         tMots_[i].setDuty(tDuty_[i]);
     }
+}
+
+void RoverController::setBrake(bool active) {
+    brake_ = active;
 }
 
 void RoverController::stopAll() {
