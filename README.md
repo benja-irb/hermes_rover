@@ -3,17 +3,31 @@
 HERMES (High-Mobility Exploration Rover) is a Wi-Fi-controlled robotic platform designed for multi-terrain navigation. It serves as a proof of concept for a competition-grade rover operating in Mars-analog environments.
 
 <p align="center">
-  <!-- BANNER O LOGO PRINCIPAL -->
-  <img src="media/hermes_3.jpg" alt="HERMES Logo" width="400">
-  
-  <h1 align="center">HERMES: High-Mobility Exploration Rover</h1>
+  <img src="media/hermes_3.jpg" alt="HERMES" width="600">
+  <br>
+  <sub><i>HERMES Rover.</i></sub>
+</p>
 
-  <p align="center">
-    A Wi-Fi-controlled robotic platform for multi-terrain navigation and space-analog exploration.</p>
-
-
+## The Platform
 
 A three-node system for remotely controlling a 4-wheel rover via an Xbox gamepad. An Xbox controller on a PC sends control packets over UDP to a Raspberry Pi, which forwards them over USB serial to an RP2040 (Pico) that drives the motors and steers the wheels with closed-loop PID control. The Pico streams telemetry (steering angles and traction PWM duty) back to the PC via the same path in reverse.
+
+
+<p align="center">
+  <img src="media/hermes_show.gif" width="700">
+  <br>
+  <sub><i>Rover movements.</i></sub>
+</p>
+
+## Video-feedback teleoperation
+
+To provide real-time video feedback, the rover is equipped with a front-mounted camera. It streams low-latency video over WebRTC to a command center (e.g., a PC) connected to the rover's local Wi-Fi network.
+
+<p align="center">
+  <img src="media/hermes_drive.gif" width="700">
+  <br>
+  <sub><i>FPV teleoperation demo.</i></sub>
+</p>
 
 ## Architecture
 
