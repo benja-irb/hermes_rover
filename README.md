@@ -2,6 +2,15 @@
 
 HERMES (High-Mobility Exploration Rover) is a Wi-Fi-controlled robotic platform designed for multi-terrain navigation. It serves as a proof of concept for a competition-grade rover operating in Mars-analog environments.
 
+<p align="center">
+  <!-- BANNER O LOGO PRINCIPAL -->
+  <img src="media/hermes_3.jpg" alt="HERMES Logo" width="400">
+  
+  <h1 align="center">HERMES: High-Mobility Exploration Rover</h1>
+
+  <p align="center">
+    A Wi-Fi-controlled robotic platform for multi-terrain navigation and space-analog exploration.</p>
+
 
 
 A three-node system for remotely controlling a 4-wheel rover via an Xbox gamepad. An Xbox controller on a PC sends control packets over UDP to a Raspberry Pi, which forwards them over USB serial to an RP2040 (Pico) that drives the motors and steers the wheels with closed-loop PID control. The Pico streams telemetry (steering angles and traction PWM duty) back to the PC via the same path in reverse.
